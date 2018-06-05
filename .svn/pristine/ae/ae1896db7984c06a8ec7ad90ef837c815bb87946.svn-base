@@ -1,0 +1,16 @@
+package ty.cloud.mq.consumer.service.dao.common;
+
+import java.sql.SQLException;
+
+import javax.servlet.jsp.jstl.sql.Result;
+
+public interface DBHelper {
+	public int execute(String sql, Object... parameterValues)
+			throws SQLException;
+
+	public Result query(String sql, Object... parameterValues)
+			throws SQLException;
+
+	public Object scalar(String sql, Object... parameterValues)
+			throws SQLException;
+}

@@ -1,0 +1,91 @@
+package ty.cloud.mq.consumer.service.dao.st;
+
+
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
+import ty.cloud.mq.consumer.service.dao.st.entity.User;
+import ty.cloud.mq.consumer.utils.db.impl.SqlDB;
+
+
+
+
+
+
+public class UserDao {
+	private static Logger logger = LoggerFactory.getLogger(UserDao.class);
+	public int insert(String data) {
+		int count = 0;
+		if (data != null) {
+			String insertSql = "INSERT INTO [CloudUser]( UserID,WxID,UserName,RealName,"
+					+ "PassWord,PasswordSalt,Tel,Gender,Email,BirthDate,Address,"
+					+ "Department,Job,ShortTel,DepartmentID,UserType) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+ 			JSONArray arr = JSONObject.parseArray(data);
+			PreparedStatement pstmt = null;
+			Connection conn = null;
+			try {
+				conn = SqlDB.sqldb().getConnection();
+				conn.setAutoCommit(false);// 关闭自动提交
+				 pstmt = conn.prepareStatement(insertSql);
+				for (Object obj : arr) {
+					User us = JSONObject.parseObject(obj.toString(), User.class);		
+					
+					pstmt.setString(1,us.getUserId() );
+					pstmt.setString(2,us.getWxId() );
+					pstmt.setString(3,us.getUserName());
+					pstmt.setString(4,us.getRealName() );
+					pstmt.setString(5,us.getPassWord() );
+					pstmt.setString(6,us.getPasswordSalt());
+					pstmt.setString(7,us.getTel());
+					pstmt.setString(8,us.getGender() );
+					pstmt.setString(9,us.getEmail() );
+					pstmt.setString(10,us.getBirthDate() );
+					pstmt.setString(11,us.getAddress() );
+					pstmt.setString(12,us.getDepartment() );
+					pstmt.setString(13,us.getJob() );
+					pstmt.setString(14,us.getShortTel() );
+					pstmt.setString(15,us.getDepartmentID());
+					pstmt.setString(16,us.getUserType() );
+					pstmt.addBatch();
+					count++;
+				}
+				pstmt.executeBatch();// 同时提交多条数据
+				conn.commit();
+			} catch (SQLException e) {
+				logger.error("UserStationDao error" + e.getMessage());
+				e.printStackTrace();
+			} finally {
+				close(pstmt);
+				close(conn);
+			}
+		}
+		return count;
+	}
+	private void close(PreparedStatement stmt) {
+		if (stmt != null) {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				logger.error("PreparedStatement close error:" + e.getLocalizedMessage());
+			}
+		}
+	}
+
+	private void close(Connection conn) {
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				logger.error("conn close error:" + e.getLocalizedMessage());
+			}
+		}
+	}
+}

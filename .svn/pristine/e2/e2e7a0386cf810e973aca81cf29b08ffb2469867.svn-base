@@ -1,0 +1,20 @@
+package ty.cloud.mq.consumer.constant;
+
+public class Constant {
+	public static final String ST_ROLE = "f310e67fd7e74a4e829d52ab8d22ce7e";
+	public static final String ST_WL_USER_TYPE = "5";
+	public static final String ST_USER_TYPE= "3";
+	public static final String ST_OFFEICE = "2";
+	public static final String WL_ROLE = "6280c8a5a3734f819820d5a71627209e";
+	public static final String WL_USER_TYPE= "2";
+	public static final String WL_OFFEICE = "3";
+	public static final String INIT_PASSWORD = "114b32670121ed03edde2817ea6d5175fad45398e577f8475fed8255";
+	public static final String COMMON_INIT_PARAM ="1";
+	public static final String DEL_FLAG = "0";
+	public static  String ST_INSERT_SQL = "insert into sys_user (user_type,office_id,create_date,update_date,id,stId,wxid,company_id,login_name,password,name,email,phone,mobile,login_flag,create_by,update_by,del_flag)   values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	public static  String WL_INSERT_SQL = "insert into sys_user (user_type,office_id,create_date,update_date,id,wlId,wxid,company_id,login_name,password,name,email,phone,mobile,login_flag,create_by,update_by,del_flag)   values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+	public static  String USER_ROLE_INSERT_SQL = "insert into sys_user_role (user_id,role_id) values (?,?)";
+	public static  String FIND_SYS_USER_BY_LOGIN_NAME = "select id,stId,wlId from sys_user where login_name = ?";
+	public static String USER_ROLE_UPDATE_SQL = "update sys_user_role set role_id = ? where user_id = ? and role_id = ?";
+	public static final String ST_WL_ROLE = "dc19677303bc44f1a02b86ed1dba9d49";
+}

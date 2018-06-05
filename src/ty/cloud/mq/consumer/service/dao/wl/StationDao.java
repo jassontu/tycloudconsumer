@@ -1,0 +1,91 @@
+package ty.cloud.mq.consumer.service.dao.wl;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+
+import ty.cloud.mq.consumer.service.dao.wl.entity.Station;
+import ty.cloud.mq.consumer.utils.db.impl.SqlDB;
+
+
+
+public class StationDao {
+	private static Logger logger = LoggerFactory.getLogger(StationDao.class);
+	
+	public int insert(String data) {
+		int count = 0;
+		if (data != null) {
+			String insertSql = "INSERT INTO CloudStation( "
+					+ " stationID,stationCode,stationName,stationKey,domain,endDate,shopUrl,province,city,lat,lon,"
+					+ "useDeliverySystem,info,address,linkPhone,linkMan,photo ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+			JSONArray arr = JSONObject.parseArray(data);
+			PreparedStatement pstmt = null;
+			Connection conn = null;
+			try {
+				conn = SqlDB.sqldb().getConnection();
+				conn.setAutoCommit(false);// 关闭自动提交
+				 pstmt = conn.prepareStatement(insertSql);
+				for (Object obj : arr) {
+					Station station = JSONObject.parseObject(obj.toString(), Station.class);
+					
+					pstmt.setString(1, station.getStationID());
+					pstmt.setString(2, station.getStationCode());
+					pstmt.setString(3, station.getStationName());
+					pstmt.setString(4, station.getStationKey());
+					pstmt.setString(5, station.getDomain());
+					pstmt.setString(6, station.getEndDate());
+					pstmt.setString(7, station.getShopUrl());
+					pstmt.setString(8,station.getProvince());
+					pstmt.setString(9, station.getCity());
+					pstmt.setString(10, station.getLat());
+					pstmt.setString(11, station.getLon());
+					pstmt.setString(12, station.getUseDeliverySystem());
+					pstmt.setString(13, station.getInfo());
+					pstmt.setString(14, station.getAddress());
+					pstmt.setString(15, station.getLinkPhone());
+					pstmt.setString(16, station.getLinkMan());
+					pstmt.setString(17, station.getPhoto());
+					pstmt.addBatch();
+					//pstmt.executeUpdate();
+					count++;
+					
+				}
+				pstmt.executeBatch();
+				conn.commit();
+			} catch (SQLException e) {
+				logger.error("StationDao error" + e.getMessage());
+				e.printStackTrace();
+			} finally {
+				close(pstmt);
+				close(conn);
+			}
+		}
+		return count;
+	}
+
+	private void close(PreparedStatement stmt) {
+		if (stmt != null) {
+			try {
+				stmt.close();
+			} catch (SQLException e) {
+				logger.error("PreparedStatement close error:" + e.getLocalizedMessage());
+			}
+		}
+	}
+
+	private void close(Connection conn) {
+		if (conn != null) {
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				logger.error("conn close error:" + e.getLocalizedMessage());
+			}
+		}
+	}
+}

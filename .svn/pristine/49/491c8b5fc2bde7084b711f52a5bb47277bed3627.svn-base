@@ -1,0 +1,10 @@
+package ty.cloud.mq.consumer.utils;
+
+
+
+public class IndexUtils {
+
+	public int counts(){
+		return 0;
+	}
+}

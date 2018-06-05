@@ -1,0 +1,91 @@
+package ty.cloud.mq.consumer.service.dao.common;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+
+import javax.servlet.jsp.jstl.sql.Result;
+import javax.servlet.jsp.jstl.sql.ResultSupport;
+import javax.sql.DataSource;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.alibaba.druid.pool.DruidDataSourceFactory;
+
+import ty.cloud.mq.consumer.utils.PropertyUtils;
+
+public class DruidDBHelper implements DBHelper {
+	private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+	DataSource dataSource;
+
+	public DruidDBHelper() throws Exception {
+		dataSource = DruidDataSourceFactory.createDataSource(PropertyUtils
+				.load("druid.properties"));
+	}
+
+	public Connection getConnection() throws SQLException {
+		return dataSource.getConnection();
+	}
+
+	@Override
+	public int execute(String sql, Object... parameterValues)
+			throws SQLException {
+		PreparedStatement stmt = null;
+		try {
+			stmt = prepareStatement(sql, parameterValues);
+			return stmt.executeUpdate();
+		} finally {
+			close(stmt);
+			
+		}
+
+	}
+
+	private void close(PreparedStatement stmt) {
+		if (stmt != null) {
+			try {
+				stmt.getConnection().close();
+				stmt.close();
+			} catch (SQLException e) {
+				logger.error("PreparedStatement close error:"
+						+ e.getLocalizedMessage());
+			}
+		}
+	}
+
+	@Override
+	public Result query(String sql, Object... parameterValues)
+			throws SQLException {
+		PreparedStatement stmt = null;
+		try {
+			stmt = prepareStatement(sql, parameterValues);
+			return ResultSupport.toResult(stmt.executeQuery());
+		} finally {
+			close(stmt);
+		}
+	}
+
+	private PreparedStatement prepareStatement(String sql,
+			Object... parameterValues) throws SQLException {
+		PreparedStatement stmt = getConnection().prepareStatement(sql);
+		if (parameterValues != null) {
+			int i = 1;
+			for (Object param : parameterValues) {
+				stmt.setObject(i++, param);
+			}
+		}
+		return stmt;
+	}
+
+	@Override
+	public Object scalar(String sql, Object... parameterValues)
+			throws SQLException {
+		Result rs = query(sql, parameterValues);
+		if (rs != null && rs.getRowsByIndex().length > 0) {
+			return rs.getRowsByIndex()[0][0];
+		}
+		return null;
+	}
+}

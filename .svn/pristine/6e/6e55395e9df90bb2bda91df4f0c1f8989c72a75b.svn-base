@@ -1,0 +1,12 @@
+package ty.cloud.mq.consumer.utils;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+public class StringUtils {
+	public static String getSql(String param){
+		//List<Map<String, String>> list =  JsonUtils.parseToSqlParam(param);
+		return null;
+	}
+}

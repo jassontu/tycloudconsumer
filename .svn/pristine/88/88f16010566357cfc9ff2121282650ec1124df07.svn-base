@@ -1,0 +1,29 @@
+package ty.cloud.mq.consumer.service.dao;
+
+import java.sql.SQLException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ty.cloud.mq.consumer.service.dao.common.impl.DB;
+
+public class LocationDao {
+	private static Logger logger = LoggerFactory.getLogger(LocationDao.class);
+
+	public int insertUser(String data) {
+		if (data != null) {
+			String[] params = data.split("&");
+			String username = params[0];
+			String password = params[1];
+			Object[] parameterValues = { username.split("=")[1],password.split("=")[1]};
+			String sql = "insert into User (UserName,PassWord) values (?,?)";
+			try {
+				return DB.sqldb().execute(sql, parameterValues);
+			} catch (SQLException e) {
+				logger.error(e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		return 0;
+	}
+}

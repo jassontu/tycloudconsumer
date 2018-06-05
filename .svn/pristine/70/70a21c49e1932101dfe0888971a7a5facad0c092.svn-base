@@ -1,0 +1,74 @@
+package ty.cloud.mq.consumer.utils;
+
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
+
+public class JsonUtils {
+
+	private JsonUtils(){
+		
+	}
+	private static class LazyHolder {
+		private static final JsonUtils INSTANCE = new JsonUtils();
+	}
+
+	public static final JsonUtils getInstance() {
+		return LazyHolder.INSTANCE;
+	}
+
+	public String parseObj(Object obj) {
+
+		return JSON.toJSONString(obj);
+	}
+
+	/**
+	
+	 */
+	public  Map<String, Object> jsonToMap(String json) {
+		Map<String, Object> result = JSONObject.parseObject(json, new TypeReference<Map<String, Object>>() {
+		});
+		return result;
+	}
+	
+	public  LinkedHashMap<String, String> parseMap(String json) {
+		LinkedHashMap<String, String> result = JSONObject.parseObject(json, new TypeReference<LinkedHashMap<String, String>>() {
+		});
+		return result;
+	}
+
+	public  <T> List<T> jsonToList(String json, Class<T> t) {
+		List<T> result = JSONObject.parseObject(json, new TypeReference<List<T>>() {
+		});
+		return result;
+	}
+	public   List<List> jsonToList(String json) {
+		List<List> result = JSONObject.parseObject(json, new TypeReference<List<List>>() {
+		});
+		return result;
+	}
+	
+	
+	public  List<List> parseToSqlParamList(String param) {
+		
+		return null;
+	}
+	
+	
+	public  List<LinkedHashMap<String, String>> parseToSqlParam(String param) {
+		List<LinkedHashMap<String, String>> result = new ArrayList<LinkedHashMap<String, String>>();
+		for (Object obj : JsonUtils.getInstance().jsonToList(param, List.class)) {
+			result.add(parseMap(obj.toString()));
+		}
+		return result;
+	}
+
+	
+
+}

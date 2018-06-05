@@ -1,0 +1,40 @@
+package ty.cloud.mq.consumer.service.dao.common.impl;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import ty.cloud.mq.consumer.exp.BusiException;
+import ty.cloud.mq.consumer.service.dao.common.DBHelper;
+import ty.cloud.mq.consumer.service.dao.common.DruidDBHelper;
+
+public class DB {
+	private static Logger logger = LoggerFactory.getLogger(DB.class);
+
+	private static Object lockObj = new Object();
+	
+	static DBHelper _sqDbHelper = null;
+
+	//static MongoDBHelper _syncDbHelper = null;
+
+	//static MongoDBHelper _asyncDbHelper = null;
+
+	public static DBHelper sqldb() {
+		if (_sqDbHelper == null) {
+			synchronized (lockObj) {
+				if (_sqDbHelper == null) {
+					try {
+						_sqDbHelper = new DruidDBHelper();
+					} catch (Exception e) {
+						logger.error(e.getMessage());
+						throw new BusiException(e);
+					}
+
+				}
+			}
+		}
+		return _sqDbHelper;
+	}
+
+	
+}
